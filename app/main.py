@@ -7,7 +7,7 @@ from logging import getLogger
 
 from flask import Flask, make_response, jsonify
 
-from src.api import GamepadAPI
+from src.api import GamepadAPI, WebAPI
 
 logger = getLogger(__name__)
 
@@ -53,7 +53,8 @@ def setup_logging():
 setup_logging()
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
-app.add_url_rule('/gamepad/', view_func=GamepadAPI.as_view('gamepad'))
+app.add_url_rule('/gamepad/', view_func=GamepadAPI.as_view(GamepadAPI.NAME))
+app.add_url_rule('/web/', view_func=WebAPI.as_view(WebAPI.NAME))
 
 
 @app.errorhandler(404)
