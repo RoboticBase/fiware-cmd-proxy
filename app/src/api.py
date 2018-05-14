@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import copy
+import os
 import json
+from urllib.parse import urljoin
 from logging import getLogger
 
 from flask import request, jsonify, render_template, redirect, url_for
@@ -10,7 +12,7 @@ import requests
 
 logger = getLogger(__name__)
 
-ORION_ENDPOINT = 'http://orion:1026/v1/updateContext'
+ORION_PATH = '/v1/updateContext'
 ORION_HEADER = {
     'Fiware-Service': 'demo1',
     'Fiware-Servicepath': '/',
@@ -34,6 +36,11 @@ ORION_PAYLOAD_TEMPLATE = {
     'updateAction': 'UPDATE',
 }
 
+if 'ORION_ENDPOINT' in os.environ:
+    ENDPOINT = urljoin(os.environ['ORION_ENDPOINT'], ORION_PATH)
+else:
+    ENDPOINT = urljoin('http://orion:1026', ORION_PATH)
+
 
 class GamepadAPI(MethodView):
     NAME = 'gamepad'
@@ -47,7 +54,7 @@ class GamepadAPI(MethodView):
             if len(value) != 0:
                 data = copy.deepcopy(ORION_PAYLOAD_TEMPLATE)
                 data['contextElements'][0]['attributes'][0]['value'] = value
-                requests.post(ORION_ENDPOINT, headers=ORION_HEADER, data=json.dumps(data))
+                requests.post(ENDPOINT, headers=ORION_HEADER, data=json.dumps(data))
 
         return jsonify({'result': 'ok'})
 
@@ -64,6 +71,11 @@ class WebAPI(MethodView):
             if len(value) != 0:
                 data = copy.deepcopy(ORION_PAYLOAD_TEMPLATE)
                 data['contextElements'][0]['attributes'][0]['value'] = value
-                requests.post(ORION_ENDPOINT, headers=ORION_HEADER, data=json.dumps(data))
+                requests.post(ENDPOINT, headers=ORION_HEADER, data=json.dumps(data))
 
-        return redirect(url_for(WebAPI.NAME))
+        if 'PREFIX' in os.environ:
+            redirect_url = os.path.join('/', os.environ['PREFIX'], *url_for(WebAPI.NAME).split(os.sep)[1:])
+        else:
+            redirect_url = url_for(WebAPI.NAME)
+
+        return redirect(redirect_url)
