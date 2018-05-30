@@ -23,7 +23,7 @@ except FileNotFoundError:
 
 
 app = Flask(__name__)
-app.config['JSON_AS_ASCII'] = False
+app.config.from_pyfile("config.cfg")
 app.add_url_rule('/gamepad/', view_func=GamepadAPI.as_view(GamepadAPI.NAME))
 app.add_url_rule('/web/', view_func=WebAPI.as_view(WebAPI.NAME))
 
@@ -38,12 +38,12 @@ def error_handler(error):
 
 
 if __name__ == '__main__':
-    DEFAULT_PORT = 3000
+    default_port = app.config['DEFAULT_PORT']
     try:
-        port = int(os.environ.get('PORT', str(DEFAULT_PORT)))
+        port = int(os.environ.get('PORT', str(default_port)))
         if port < 1 or 65535 < port:
-            port = DEFAULT_PORT
+            port = default_port
     except ValueError:
-        port = DEFAULT_PORT
+        port = default_port
 
     app.run(host="0.0.0.0", port=port)
