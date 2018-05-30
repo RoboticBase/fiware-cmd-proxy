@@ -21,8 +21,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY flask-nginx.conf /etc/nginx/conf.d/flask-nginx.conf
 COPY uwsgi.ini /etc/uwsgi/uwsgi.ini
 COPY supervisord.conf /etc/supervisord.conf
+COPY entrypoint.sh /opt
 
-RUN sed -i -e "s/<<PORT>>/${PORT}/g" /etc/nginx/conf.d/flask-nginx.conf
+RUN chmod a+x /opt/entrypoint.sh
 
-EXPOSE $PORT
-ENTRYPOINT ["/usr/bin/supervisord", "--nodaemon", "--configuration", "/etc/supervisord.conf"]
+ENTRYPOINT /opt/entrypoint.sh
