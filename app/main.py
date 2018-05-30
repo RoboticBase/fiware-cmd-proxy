@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import argparse
+import json
 import os
 import logging.config
 from logging import getLogger
@@ -9,48 +9,29 @@ from flask import Flask, make_response, jsonify
 
 from src.api import GamepadAPI, WebAPI
 
-logger = getLogger(__name__)
+DEFAULT_PORT = 3000
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description='cmd-proxy')
-    parser.add_argument('-p', '--port', action='store', nargs='?', const=3000, default=3000, type=int, help='listening port')
-    return parser.parse_args()
+try:
+    with open("logging.json", "r") as f:
+        logging.config.dictConfig(json.load(f))
+        if ('LOG_LEVEL' in os.environ and
+                os.environ['LOG_LEVEL'].upper() in ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']):
+            for handler in getLogger().handlers:
+                if handler.get_name() == 'console':
+                    handler.setLevel(getattr(logging, os.environ['LOG_LEVEL'].upper()))
+except FileNotFoundError:
+    pass
 
 
-def setup_logging():
-    log_level = 'INFO'
-    if ('LOG_LEVEL' in os.environ and
-            os.environ['LOG_LEVEL'].upper() in ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']):
-        log_level = os.environ['LOG_LEVEL'].upper()
-
-    logging.config.dictConfig({
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'default': {
-                'format': '%(asctime)s [%(levelname)7s] %(name)s - %(message)s',
-                'datefmt': '%Y/%m/%d %H:%M:%S',
-            }
-        },
-        'handlers': {
-            'console': {
-                'class': 'logging.StreamHandler',
-                'level': 'DEBUG',
-                'formatter': 'default',
-                'stream': 'ext://sys.stdout',
-            }
-        },
-        'loggers': {
-            '': {
-                'level': log_level,
-                'handlers': ['console'],
-            }
-        }
-    })
+try:
+    port = int(os.environ.get('PORT', str(DEFAULT_PORT)))
+    if port < 1 or 65535 < port:
+        port = DEFAULT_PORT
+except ValueError:
+    port = DEFAULT_PORT
 
 
-setup_logging()
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 app.add_url_rule('/gamepad/', view_func=GamepadAPI.as_view(GamepadAPI.NAME))
@@ -67,5 +48,4 @@ def error_handler(error):
 
 
 if __name__ == '__main__':
-    args = parse_args()
-    app.run(host="0.0.0.0", port=args.port)
+    app.run(host="0.0.0.0", port=port)
