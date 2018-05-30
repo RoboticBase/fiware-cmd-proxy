@@ -7,7 +7,7 @@ from logging import getLogger
 
 from flask import Flask, make_response, jsonify
 
-from src.api import GamepadAPI, WebAPI
+from src.views import GamepadAPI, WebAPI
 
 DEFAULT_PORT = 3000
 
