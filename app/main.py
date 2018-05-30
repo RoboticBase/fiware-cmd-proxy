@@ -9,8 +9,6 @@ from flask import Flask, make_response, jsonify
 
 from src.views import GamepadAPI, WebAPI
 
-DEFAULT_PORT = 3000
-
 
 try:
     with open("logging.json", "r") as f:
@@ -22,14 +20,6 @@ try:
                     handler.setLevel(getattr(logging, os.environ['LOG_LEVEL'].upper()))
 except FileNotFoundError:
     pass
-
-
-try:
-    port = int(os.environ.get('PORT', str(DEFAULT_PORT)))
-    if port < 1 or 65535 < port:
-        port = DEFAULT_PORT
-except ValueError:
-    port = DEFAULT_PORT
 
 
 app = Flask(__name__)
@@ -48,4 +38,12 @@ def error_handler(error):
 
 
 if __name__ == '__main__':
+    DEFAULT_PORT = 3000
+    try:
+        port = int(os.environ.get('PORT', str(DEFAULT_PORT)))
+        if port < 1 or 65535 < port:
+            port = DEFAULT_PORT
+    except ValueError:
+        port = DEFAULT_PORT
+
     app.run(host="0.0.0.0", port=port)
