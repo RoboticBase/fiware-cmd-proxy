@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-## logging
+# logging
 LOGGING_JSON = 'logging.json'
-TARGET_HANDLERS = ['console',]
+TARGET_HANDLERS = ['console', ]
 
-## flask config
+# flask config
 CONFIG_CFG = 'config.cfg'
 DEFAULT_ORION_ENDPOINT = 'DEFAULT_ORION_ENDPOINT'
 
-## environment variable name
+# environment variable name
 LOG_LEVEL = 'LOG_LEVEL'
 DEFAULT_PORT = 'DEFAULT_PORT'
 FIWARE_SERVICE = 'FIWARE_SERVICE'
@@ -18,7 +18,7 @@ ROBOT_TYPE = 'ROBOT_TYPE'
 ORION_ENDPOINT = 'ORION_ENDPOINT'
 PREFIX = 'PREFIX'
 
-## orion specification
+# orion specification
 ORION_PATH = '/v1/updateContext'
 ORION_PAYLOAD_TEMPLATE = {
     'contextElements': [
