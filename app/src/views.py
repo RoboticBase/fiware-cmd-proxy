@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 from flask import request, jsonify, render_template, redirect, url_for, current_app
 from flask.views import MethodView
 
-from src.api import send_request_to_orion
+from src.orion import send_request_to_orion
 from src import const
 
 logger = getLogger(__name__)

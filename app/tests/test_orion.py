@@ -6,7 +6,7 @@ import pytest
 
 import requests
 
-from src.api import send_request_to_orion
+from src.orion import send_request_to_orion
 from src import const
 
 
