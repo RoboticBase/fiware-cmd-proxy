@@ -8,10 +8,9 @@ from flask import request, jsonify, render_template, redirect, url_for, current_
 from flask.views import MethodView
 
 from src.api import send_request_to_orion
+from src import const
 
 logger = getLogger(__name__)
-
-ORION_PATH = '/v1/updateContext'
 
 
 class OrionEndpointMixin:
@@ -20,10 +19,10 @@ class OrionEndpointMixin:
     @classmethod
     def get_orion_endpoint(cls):
         if cls.ORION_ENDPOINT is None:
-            if 'ORION_ENDPOINT' in os.environ:
-                cls.ORION_ENDPOINT = urljoin(os.environ['ORION_ENDPOINT'], ORION_PATH)
+            if const.ORION_ENDPOINT in os.environ:
+                cls.ORION_ENDPOINT = urljoin(os.environ[const.ORION_ENDPOINT], const.ORION_PATH)
             else:
-                cls.ORION_ENDPOINT = urljoin(current_app.config['DEFAULT_ORION_ENDPOINT'], ORION_PATH)
+                cls.ORION_ENDPOINT = urljoin(current_app.config[const.DEFAULT_ORION_ENDPOINT], const.ORION_PATH)
         return cls.ORION_ENDPOINT
 
 
@@ -54,8 +53,8 @@ class WebAPI(OrionEndpointMixin, MethodView):
             if len(value) != 0:
                 send_request_to_orion(WebAPI.get_orion_endpoint(), value)
 
-        if 'PREFIX' in os.environ:
-            redirect_url = os.path.join('/', os.environ['PREFIX'], *url_for(WebAPI.NAME).split(os.sep)[1:])
+        if const.PREFIX in os.environ:
+            redirect_url = os.path.join('/', os.environ[const.PREFIX], *url_for(WebAPI.NAME).split(os.sep)[1:])
         else:
             redirect_url = url_for(WebAPI.NAME)
 

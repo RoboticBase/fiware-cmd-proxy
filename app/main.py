@@ -8,22 +8,22 @@ from logging import getLogger
 from flask import Flask, make_response, jsonify
 
 from src.views import GamepadAPI, WebAPI
-
+from src import const
 
 try:
-    with open("logging.json", "r") as f:
+    with open(const.LOGGING_JSON, "r") as f:
         logging.config.dictConfig(json.load(f))
-        if ('LOG_LEVEL' in os.environ and
-                os.environ['LOG_LEVEL'].upper() in ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']):
+        if (const.LOG_LEVEL in os.environ and
+                os.environ[const.LOG_LEVEL].upper() in ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']):
             for handler in getLogger().handlers:
-                if handler.get_name() == 'console':
-                    handler.setLevel(getattr(logging, os.environ['LOG_LEVEL'].upper()))
+                if handler.get_name() in const.TARGET_HANDLERS:
+                    handler.setLevel(getattr(logging, os.environ[const.LOG_LEVEL].upper()))
 except FileNotFoundError:
     pass
 
 
 app = Flask(__name__)
-app.config.from_pyfile("config.cfg")
+app.config.from_pyfile(const.CONFIG_CFG)
 app.add_url_rule('/gamepad/', view_func=GamepadAPI.as_view(GamepadAPI.NAME))
 app.add_url_rule('/web/', view_func=WebAPI.as_view(WebAPI.NAME))
 
@@ -38,7 +38,7 @@ def error_handler(error):
 
 
 if __name__ == '__main__':
-    default_port = app.config['DEFAULT_PORT']
+    default_port = app.config[const.DEFAULT_PORT]
     try:
         port = int(os.environ.get('PORT', str(default_port)))
         if port < 1 or 65535 < port:
