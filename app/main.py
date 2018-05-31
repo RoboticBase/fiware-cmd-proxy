@@ -5,9 +5,10 @@ import os
 import logging.config
 from logging import getLogger
 
-from flask import Flask, make_response, jsonify
+from flask import Flask
 
 from src.views import GamepadAPI, WebAPI
+from src import error_handler
 from src import const
 
 try:
@@ -26,15 +27,7 @@ app = Flask(__name__)
 app.config.from_pyfile(const.CONFIG_CFG)
 app.add_url_rule('/gamepad/', view_func=GamepadAPI.as_view(GamepadAPI.NAME))
 app.add_url_rule('/web/', view_func=WebAPI.as_view(WebAPI.NAME))
-
-
-@app.errorhandler(404)
-@app.errorhandler(405)
-@app.errorhandler(500)
-def error_handler(error):
-    name = error.name if hasattr(error, 'name') else 'Internal Server Error'
-    code = error.code if hasattr(error, 'code') else 500
-    return make_response(jsonify({'error': name}), code)
+app.register_blueprint(error_handler.blueprint)
 
 
 if __name__ == '__main__':
