@@ -51,7 +51,6 @@ def mocked_post():
 
 @pytest.fixture
 def client():
-    main.app.testing = True
     return main.app.test_client()
 
 

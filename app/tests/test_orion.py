@@ -11,7 +11,7 @@ from src import const
 
 class TestSendRequestToOrion:
 
-    @pytest.mark.parametrize('v', [None, '', ' ', 'test value'])
+    @pytest.mark.parametrize('v', [None, '', ' ', 'test value', '   test value 2   '])
     def test_success_no_env(self, monkeypatch, endpoint, mocked_post, v):
         mocked_post(monkeypatch, endpoint, '', '', '', '', v)
         send_request_to_orion(endpoint, v)
@@ -20,7 +20,7 @@ class TestSendRequestToOrion:
     @pytest.mark.parametrize('fsp', ['', ' ', 'test servicepath'])
     @pytest.mark.parametrize('ri', ['', ' ', 'test robot id'])
     @pytest.mark.parametrize('rt', ['', ' ', 'test robot type'])
-    @pytest.mark.parametrize('v', [None, '', ' ', 'test value'])
+    @pytest.mark.parametrize('v', [None, '', ' ', 'test value', '   test value 2   '])
     def test_success_env(self, monkeypatch, endpoint, mocked_post, fs, fsp, ri, rt, v):
         os.environ[const.FIWARE_SERVICE] = fs
         os.environ[const.FIWARE_SERVICEPATH] = fsp

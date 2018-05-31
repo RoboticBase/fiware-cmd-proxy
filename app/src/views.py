@@ -33,12 +33,16 @@ class GamepadAPI(OrionEndpointMixin, MethodView):
         payload = request.data.decode('utf-8')
         logger.info(f'request payload={payload}')
 
-        for data in json.loads(payload)['data']:
-            value = data['button']['value'].strip()
-            if len(value) != 0:
-                send_request_to_orion(GamepadAPI.get_orion_endpoint(), value)
+        result = {'result': 'ok', 'requested': False}
 
-        return jsonify({'result': 'ok'})
+        for data in json.loads(payload)['data']:
+            value = data['button']['value']
+            if value is not None and len(value.strip()) != 0:
+                send_request_to_orion(GamepadAPI.get_orion_endpoint(), value.strip())
+                result['requested'] = True
+                result['value'] = value.strip()
+
+        return jsonify(result)
 
 
 class WebAPI(OrionEndpointMixin, MethodView):
