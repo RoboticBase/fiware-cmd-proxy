@@ -1,8 +1,8 @@
 FROM python:3.6.5-alpine
 MAINTAINER Nobuyuki Matsui <nobuyuki.matsui@gmail.com>
 
-ARG PORT
-ENV PORT ${PORT:-3000}
+ARG LISTEN_PORT
+ENV LISTEN_PORT ${LISTEN_PORT:-3000}
 
 COPY ./app /opt/fiware-cmd-proxy
 

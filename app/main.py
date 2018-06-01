@@ -33,7 +33,7 @@ app.register_blueprint(error_handler.blueprint)
 if __name__ == '__main__':
     default_port = app.config[const.DEFAULT_PORT]
     try:
-        port = int(os.environ.get('PORT', str(default_port)))
+        port = int(os.environ.get(const.LISTEN_PORT, str(default_port)))
         if port < 1 or 65535 < port:
             port = default_port
     except ValueError:
