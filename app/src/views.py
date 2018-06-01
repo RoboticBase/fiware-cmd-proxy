@@ -37,7 +37,11 @@ class GamepadAPI(OrionEndpointMixin, MethodView):
         if data is None or len(data.strip()) == 0:
             raise BadRequest()
 
-        payload = json.loads(data)
+        try:
+            payload = json.loads(data)
+        except json.decoder.JSONDecodeError:
+            raise BadRequest()
+
         if (payload is None or not isinstance(payload, dict) or
                 'data' not in payload or not isinstance(payload['data'], list)):
             raise BadRequest()
