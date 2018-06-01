@@ -5,6 +5,7 @@ from flask import Blueprint, make_response, jsonify
 blueprint = Blueprint('app', __name__)
 
 
+@blueprint.app_errorhandler(400)
 @blueprint.app_errorhandler(404)
 @blueprint.app_errorhandler(405)
 @blueprint.app_errorhandler(500)

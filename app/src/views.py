@@ -6,6 +6,7 @@ from urllib.parse import urljoin
 
 from flask import request, jsonify, render_template, redirect, url_for, current_app
 from flask.views import MethodView
+from werkzeug.exceptions import BadRequest
 
 from src.orion import send_request_to_orion
 from src import const
@@ -30,17 +31,27 @@ class GamepadAPI(OrionEndpointMixin, MethodView):
     NAME = 'gamepad'
 
     def post(self):
-        payload = request.data.decode('utf-8')
-        logger.info(f'request payload={payload}')
+        data = request.data.decode('utf-8')
+        logger.info(f'request data={data}')
+
+        if data is None or len(data.strip()) == 0:
+            raise BadRequest()
+
+        payload = json.loads(data)
+        if (payload is None or not isinstance(payload, dict) or
+                'data' not in payload or not isinstance(payload['data'], list)):
+            raise BadRequest()
 
         result = {'result': 'ok', 'requested': False}
 
-        for data in json.loads(payload)['data']:
-            value = data['button']['value']
-            if value is not None and len(value.strip()) != 0:
-                send_request_to_orion(GamepadAPI.get_orion_endpoint(), value.strip())
-                result['requested'] = True
-                result['value'] = value.strip()
+        for data in payload['data']:
+            if (isinstance(data, dict) and 'button' in data and
+                    isinstance(data['button'], dict) and 'value' in data['button']):
+                value = data['button']['value']
+                if value is not None and isinstance(value, str) and len(value.strip()) != 0:
+                    send_request_to_orion(GamepadAPI.get_orion_endpoint(), value.strip())
+                    result['requested'] = True
+                    result['value'] = value.strip()
 
         return jsonify(result)
 

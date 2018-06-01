@@ -90,6 +90,34 @@ class TestGamepadAPI:
         assert response.content_type == 'application/json'
         assert response.json == {'error': 'Internal Server Error'}
 
+    @pytest.mark.parametrize('data', ['EMPTY', None, '', ' ', 1, 'a=b', [],
+                                      {}, {'data': ''}, {'data': 1}, {'data': {}}, {'data': None}])
+    def test_bad_request1(self, monkeypatch, endpoint, mocked_post, client, data):
+        counter = mocked_post(monkeypatch, endpoint, '', '', '', '', 'dummy')
+
+        if data == 'EMPTY':
+            response = client.post('/gamepad/', content_type='application/json')
+        else:
+            response = client.post('/gamepad/', data=json.dumps(data), content_type='application/json')
+        assert response.status_code == 400
+        assert response.content_type == 'application/json'
+        assert response.json == {'error': 'Bad Request'}
+        assert counter.count == 0
+
+    @pytest.mark.parametrize('data', [{'data': []}, {'data': ['', ]}, {'data': [0, ]}, {'data': [None, ]},
+                                      {'data': [{}, ]}, {'data': [{'invalid': 'dummy'}, ]},
+                                      {'data': [{'button': ''}, ]}, {'data': [{'button': 1}, ]}, {'data': [{'button': None}, ]},
+                                      {'data': [{'button': {}}, ]}, {'data': [{'button': {'invalid': 'dummy'}}, ]},
+                                      {'data': [{'button': {'value': None}}, ]}, {'data': [{'button': {'value': 1}}, ]},
+                                      {'data': [{'button': {'value': []}}, ]}, {'data': [{'button': {'value': {}}}, ]}])
+    def test_bad_request2(self, monkeypatch, endpoint, mocked_post, client, data):
+        counter = mocked_post(monkeypatch, endpoint, '', '', '', '', 'dummy')
+        response = client.post('/gamepad/', data=json.dumps(data), content_type='application/json')
+        assert response.status_code == 200
+        assert response.content_type == 'application/json'
+        assert response.json == {'result': 'ok', 'requested': False}
+        assert counter.count == 0
+
     def test_moved_permanentry(self, monkeypatch, endpoint, mocked_post, client):
         v = 'dummy'
 
@@ -217,6 +245,19 @@ class TestWebAPI:
         assert response.status_code == 500
         assert response.content_type == 'application/json'
         assert response.json == {'error': 'Internal Server Error'}
+
+    @pytest.mark.parametrize('data', ['EMPTY', None, {'invalid': 'dummy'}])
+    def test_bad_request(self, monkeypatch, endpoint, mocked_post, client, data):
+        counter = mocked_post(monkeypatch, endpoint, '', '', '', '', 'dummy')
+
+        if data == 'EMPTY':
+            response = client.post('/web/', follow_redirects=False)
+        else:
+            response = client.post('/web/', data=data, follow_redirects=False)
+        assert response.status_code == 302
+        assert response.content_type == 'text/html; charset=utf-8'
+        assert urlparse(response.location).path == '/web/'
+        assert counter.count == 0
 
     @pytest.mark.parametrize('method', ['get', 'post', 'head'])
     def test_moved_permanentry(self, monkeypatch, endpoint, mocked_post, client, method):
