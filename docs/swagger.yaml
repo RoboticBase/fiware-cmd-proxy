@@ -1,0 +1,115 @@
+swagger: "2.0"
+info:
+  title: "fiware-cmd-proxy"
+  version: "0.1.0"
+paths:
+  /web/:
+    get:
+      description: "show web controller page"
+      consumes:
+      - "text/html; charset=utf-8"
+      produces:
+      - "text/html; charset=utf-8"
+      responses:
+        200:
+          description: "web controller page"
+    post:
+      description: "receive command from web controller page, and send command to ROS robot through orion"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "text/html; charset=utf-8"
+      parameters:
+      - in: "formData"
+        name: "move"
+        type: "string"
+        description: "received command"
+      responses:
+        302:
+          description: "post redirect"
+        404:
+          description: "invalid path"
+          schema:
+            $ref: "#/definitions/error"
+          examples:
+            notfound:
+              error: "Not Found"
+        500:
+          description: "exception raised"
+          schema:
+            $ref: "#/definitions/error"
+          examples:
+            notfound:
+              error: "Internal Server Error"
+  /gamepad/:
+    post:
+      description: "receive command from gamepad through orion, and send command to ROS robot through orion"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/gamepad_payload"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/success"
+          examples:
+            success:
+              result: "ok"
+              requested: true
+              value: "requested_cmd"
+        400:
+          description: "invalid json payload"
+          schema:
+            $ref: "#/definitions/error"
+          examples:
+            badrequest:
+              error: "Bad Request"
+        404:
+          description: "invalid path"
+          schema:
+            $ref: "#/definitions/error"
+          examples:
+            notfound:
+              error: "Not Found"
+        500:
+          description: "exception raised"
+          schema:
+            $ref: "#/definitions/error"
+          examples:
+            notfound:
+              error: "Internal Server Error"
+definitions:
+  gamepad_payload:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          properties:
+            button:
+              type: "object"
+              properties:
+                value:
+                  type: "string"
+                  example: "requested_cmd"
+  success:
+    type: "object"
+    properties:
+      result:
+        type: "string"
+      requested:
+        type: "boolean"
+      value:
+        type: "string"
+  error:
+    type: "object"
+    properties:
+      error:
+        type: "string"
