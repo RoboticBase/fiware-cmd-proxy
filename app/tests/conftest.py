@@ -19,6 +19,8 @@ def endpoint():
 @pytest.fixture
 def mocked_post():
     def setup(monkeypatch, ep, fs, fsp, ri, rt, v):
+        counter = type('', (), {'count': 0})()
+
         def mock_func(endpoint, headers, data):
             assert endpoint == ep
             assert isinstance(headers, dict)
@@ -45,7 +47,9 @@ def mocked_post():
                 ],
                 'updateAction': 'UPDATE',
             }
+            counter.count += 1
         monkeypatch.setattr(requests, 'post', mock_func)
+        return counter
     return setup
 
 
@@ -65,3 +69,5 @@ def teardown():
         del os.environ[const.ROBOT_ID]
     if const.ROBOT_TYPE in os.environ:
         del os.environ[const.ROBOT_TYPE]
+    if const.PREFIX in os.environ:
+        del os.environ[const.PREFIX]

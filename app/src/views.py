@@ -58,7 +58,9 @@ class WebAPI(OrionEndpointMixin, MethodView):
                 send_request_to_orion(WebAPI.get_orion_endpoint(), value)
 
         if const.PREFIX in os.environ:
-            redirect_url = os.path.join('/', os.environ[const.PREFIX], *url_for(WebAPI.NAME).split(os.sep)[1:])
+            redirect_url = os.path.join('/',
+                                        os.environ.get(const.PREFIX, '').strip(),
+                                        *url_for(WebAPI.NAME).split(os.sep)[1:])
         else:
             redirect_url = url_for(WebAPI.NAME)
 
