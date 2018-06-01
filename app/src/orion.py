@@ -22,3 +22,4 @@ def send_request_to_orion(endpoint, value):
                .replace('<<SEND_VALUE>>', value if value is not None else '<<null>>') \
                .replace('"<<null>>"', 'null')
     requests.post(endpoint, headers=headers, data=data)
+    logger.debug(f'sent data to orion, headers={headers}, data={data}')
