@@ -1,6 +1,9 @@
 # fiware-cmd-proxy
 This [flask](http://flask.pocoo.org/) application control [ROS](http://flask.pocoo.org/) robot from a gamepad or browser.
 
+[![TravisCI Status](https://travis-ci.org/tech-sketch/fiware-cmd-proxy.svg?branch=master)](https://travis-ci.org/tech-sketch/fiware-cmd-proxy)
+[![DockerHub Status](https://dockerbuildbadges.quelltext.eu/status.svg?organization=techsketch&repository=fiware-cmd-proxy)](https://hub.docker.com/r/techsketch/fiware-cmd-proxy/builds/)
+
 ## Description
 This application works as a component of [FIWARE](https://www.fiware.org/).
 
