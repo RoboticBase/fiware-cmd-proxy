@@ -1,5 +1,5 @@
 # fiware-cmd-proxy
-This [flask](http://flask.pocoo.org/) application control [ROS](http://flask.pocoo.org/) robot from a gamepad or browser.
+This [flask](http://flask.pocoo.org/) application controls [ROS](http://flask.pocoo.org/) robot from a gamepad or browser.
 
 [![TravisCI Status](https://travis-ci.org/tech-sketch/fiware-cmd-proxy.svg?branch=master)](https://travis-ci.org/tech-sketch/fiware-cmd-proxy)
 [![DockerHub Status](https://dockerbuildbadges.quelltext.eu/status.svg?organization=techsketch&repository=fiware-cmd-proxy)](https://hub.docker.com/r/techsketch/fiware-cmd-proxy/builds/)
@@ -21,7 +21,7 @@ This application accepts the Environment Variables like below:
 |`LOG_LEVEL`|log level(DEBUG, INFO, WARNING, ERRRO, CRITICAL)|INFO|
 |`LISTEN_PORT`|listen port of this service|3000|
 |`ORION_ENDPOINT`|endpoint url of orion context broker|http://127.0.0.1:1026|
-|`PREFIX`|the prefix specified as the ambassador's annotation|http://127.0.0.1:1026|
+|`PREFIX`|the prefix specified as the ambassador's annotation|''|
 |`FIWARE_SERVICE`|the value of 'Fiware-Service' HTTP Header|''|
 |`FIWARE_SERVICEPATH`|the value of 'Fiware-Servicepath' HTTP Header|''|
 |`ROBOT_ID`|the id specified when registering robot entity to orion|''|
