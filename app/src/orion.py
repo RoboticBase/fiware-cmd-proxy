@@ -17,9 +17,9 @@ def send_request_to_orion(endpoint, value):
     headers['Content-Type'] = 'application/json'
 
     data = json.dumps(const.ORION_PAYLOAD_TEMPLATE)
-    data = data.replace('<<ROBOT_ID>>', os.environ.get(const.ROBOT_ID, '')) \
-               .replace('<<ROBOT_TYPE>>', os.environ.get(const.ROBOT_TYPE, '')) \
-               .replace('<<SEND_VALUE>>', value if value is not None else '<<null>>') \
+    data = data.replace('<<SEND_VALUE>>', value if value is not None else '<<null>>') \
                .replace('"<<null>>"', 'null')
-    requests.post(endpoint, headers=headers, data=data)
+    endpoint = endpoint.replace('<<ROBOT_ID>>', os.environ.get(const.ROBOT_ID, '')) \
+                       .replace('<<ROBOT_TYPE>>', os.environ.get(const.ROBOT_TYPE, ''))
+    requests.patch(endpoint, headers=headers, data=data)
     logger.debug(f'sent data to orion, headers={headers}, data={data}')
