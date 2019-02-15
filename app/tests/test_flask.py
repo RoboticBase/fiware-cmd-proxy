@@ -14,8 +14,8 @@ from src import const
 class TestGamepadAPI:
 
     @pytest.mark.parametrize('v', [None, '', ' ', 'test value', '   test value 2   '])
-    def test_success_no_env(self, monkeypatch, endpoint, mocked_post, client, v):
-        counter = mocked_post(monkeypatch, endpoint, '', '', '', '', v.strip() if v is not None else None)
+    def test_success_no_env(self, monkeypatch, endpoint, mocked_patch, client, v):
+        counter = mocked_patch(monkeypatch, endpoint, '', '', '', '', v.strip() if v is not None else None)
 
         data = {
             'data': [
@@ -41,13 +41,13 @@ class TestGamepadAPI:
     @pytest.mark.parametrize('ri', ['', ' ', 'test robot id'])
     @pytest.mark.parametrize('rt', ['', ' ', 'test robot type'])
     @pytest.mark.parametrize('v', [None, '', ' ', 'test value', '   test value 2   '])
-    def test_success_env(self, monkeypatch, endpoint, mocked_post, client, fs, fsp, ri, rt, v):
+    def test_success_env(self, monkeypatch, endpoint, mocked_patch, client, fs, fsp, ri, rt, v):
         os.environ[const.FIWARE_SERVICE] = fs
         os.environ[const.FIWARE_SERVICEPATH] = fsp
         os.environ[const.ROBOT_ID] = ri
         os.environ[const.ROBOT_TYPE] = rt
 
-        counter = mocked_post(monkeypatch, endpoint, fs, fsp, ri, rt, v.strip() if v is not None else None)
+        counter = mocked_patch(monkeypatch, endpoint, fs, fsp, ri, rt, v.strip() if v is not None else None)
 
         data = {
             'data': [
@@ -71,10 +71,10 @@ class TestGamepadAPI:
     def test_raise_error(self, monkeypatch, endpoint, client):
         v = 'dummy'
 
-        def mocked_post(endpoint, headers, data):
+        def mocked_patch(endpoint, headers, data):
             raise requests.exceptions.RequestException()
 
-        monkeypatch.setattr(requests, 'post', mocked_post)
+        monkeypatch.setattr(requests, 'patch', mocked_patch)
 
         data = {
             'data': [
@@ -92,8 +92,8 @@ class TestGamepadAPI:
 
     @pytest.mark.parametrize('data', ['EMPTY', None, '', ' ', 1, 'a=b', [],
                                       {}, {'data': ''}, {'data': 1}, {'data': {}}, {'data': None}])
-    def test_bad_request1(self, monkeypatch, endpoint, mocked_post, client, data):
-        counter = mocked_post(monkeypatch, endpoint, '', '', '', '', 'dummy')
+    def test_bad_request1(self, monkeypatch, endpoint, mocked_patch, client, data):
+        counter = mocked_patch(monkeypatch, endpoint, '', '', '', '', 'dummy')
 
         if data == 'EMPTY':
             response = client.post('/gamepad/', content_type='application/json')
@@ -110,18 +110,18 @@ class TestGamepadAPI:
                                       {'data': [{'button': {}}, ]}, {'data': [{'button': {'invalid': 'dummy'}}, ]},
                                       {'data': [{'button': {'value': None}}, ]}, {'data': [{'button': {'value': 1}}, ]},
                                       {'data': [{'button': {'value': []}}, ]}, {'data': [{'button': {'value': {}}}, ]}])
-    def test_bad_request2(self, monkeypatch, endpoint, mocked_post, client, data):
-        counter = mocked_post(monkeypatch, endpoint, '', '', '', '', 'dummy')
+    def test_bad_request2(self, monkeypatch, endpoint, mocked_patch, client, data):
+        counter = mocked_patch(monkeypatch, endpoint, '', '', '', '', 'dummy')
         response = client.post('/gamepad/', data=json.dumps(data), content_type='application/json')
         assert response.status_code == 200
         assert response.content_type == 'application/json'
         assert response.json == {'result': 'ok', 'requested': False}
         assert counter.count == 0
 
-    def test_moved_permanentry(self, monkeypatch, endpoint, mocked_post, client):
+    def test_moved_permanentry(self, monkeypatch, endpoint, mocked_patch, client):
         v = 'dummy'
 
-        counter = mocked_post(monkeypatch, endpoint, '', '', '', '', v.strip() if v is not None else None)
+        counter = mocked_patch(monkeypatch, endpoint, '', '', '', '', v.strip() if v is not None else None)
 
         data = {
             'data': [
@@ -139,10 +139,10 @@ class TestGamepadAPI:
 
     @pytest.mark.parametrize('method', ['get', 'put', 'patch', 'delete', 'head'])
     @pytest.mark.parametrize('path', ['/gamepad/', '/gamepad'])
-    def test_method_not_allowed(self, monkeypatch, endpoint, mocked_post, client, method, path):
+    def test_method_not_allowed(self, monkeypatch, endpoint, mocked_patch, client, method, path):
         v = 'dummy'
 
-        counter = mocked_post(monkeypatch, endpoint, '', '', '', '', v.strip() if v is not None else None)
+        counter = mocked_patch(monkeypatch, endpoint, '', '', '', '', v.strip() if v is not None else None)
 
         data = {
             'data': [
@@ -195,8 +195,8 @@ class TestWebAPI:
         assert q.find('button[type="submit"][name="move"][value="cross"]').text() == '☓'
 
     @pytest.mark.parametrize('v', [None, '', ' ', 'test value', '   test value 2   '])
-    def test_post_no_env(self, monkeypatch, endpoint, mocked_post, client, v):
-        counter = mocked_post(monkeypatch, endpoint, '', '', '', '', v.strip() if v is not None else None)
+    def test_post_no_env(self, monkeypatch, endpoint, mocked_patch, client, v):
+        counter = mocked_patch(monkeypatch, endpoint, '', '', '', '', v.strip() if v is not None else None)
 
         response = client.post('/web/', data=dict(move=v), follow_redirects=False)
         assert response.status_code == 302
@@ -215,14 +215,14 @@ class TestWebAPI:
                                    'prefix', '/prefix', 'prefix/', '/prefix/', '  prefix  ',
                                    'prefix/1', '/prefix/1', 'prefix/1/', '/prefix/1/', '  prefix/1  '])
     @pytest.mark.parametrize('v', [None, '', ' ', 'test value', '   test value 2   '])
-    def test_success_env(self, monkeypatch, endpoint, mocked_post, client, fs, fsp, ri, rt, p, v):
+    def test_success_env(self, monkeypatch, endpoint, mocked_patch, client, fs, fsp, ri, rt, p, v):
         os.environ[const.FIWARE_SERVICE] = fs
         os.environ[const.FIWARE_SERVICEPATH] = fsp
         os.environ[const.ROBOT_ID] = ri
         os.environ[const.ROBOT_TYPE] = rt
         os.environ[const.PREFIX] = p
 
-        counter = mocked_post(monkeypatch, endpoint, fs, fsp, ri, rt, v.strip() if v is not None else None)
+        counter = mocked_patch(monkeypatch, endpoint, fs, fsp, ri, rt, v.strip() if v is not None else None)
 
         response = client.post('/web/', data=dict(move=v), follow_redirects=False)
         assert response.status_code == 302
@@ -236,10 +236,10 @@ class TestWebAPI:
     def test_raise_error(self, monkeypatch, endpoint, client):
         v = 'dummy'
 
-        def mocked_post(endpoint, headers, data):
+        def mocked_patch(endpoint, headers, data):
             raise requests.exceptions.RequestException()
 
-        monkeypatch.setattr(requests, 'post', mocked_post)
+        monkeypatch.setattr(requests, 'patch', mocked_patch)
 
         response = client.post('/web/', data=dict(move=v), follow_redirects=False)
         assert response.status_code == 500
@@ -247,8 +247,8 @@ class TestWebAPI:
         assert response.json == {'error': 'Internal Server Error'}
 
     @pytest.mark.parametrize('data', ['EMPTY', None, {'invalid': 'dummy'}])
-    def test_bad_request(self, monkeypatch, endpoint, mocked_post, client, data):
-        counter = mocked_post(monkeypatch, endpoint, '', '', '', '', 'dummy')
+    def test_bad_request(self, monkeypatch, endpoint, mocked_patch, client, data):
+        counter = mocked_patch(monkeypatch, endpoint, '', '', '', '', 'dummy')
 
         if data == 'EMPTY':
             response = client.post('/web/', follow_redirects=False)
@@ -260,10 +260,10 @@ class TestWebAPI:
         assert counter.count == 0
 
     @pytest.mark.parametrize('method', ['get', 'post', 'head'])
-    def test_moved_permanentry(self, monkeypatch, endpoint, mocked_post, client, method):
+    def test_moved_permanentry(self, monkeypatch, endpoint, mocked_patch, client, method):
         v = 'dummy'
 
-        counter = mocked_post(monkeypatch, endpoint, '', '', '', '', v.strip() if v is not None else None)
+        counter = mocked_patch(monkeypatch, endpoint, '', '', '', '', v.strip() if v is not None else None)
 
         response = getattr(client, method)('/web', data=dict(move=v), follow_redirects=False)
         assert response.status_code == 301
@@ -272,10 +272,10 @@ class TestWebAPI:
 
     @pytest.mark.parametrize('method', ['put', 'patch', 'delete'])
     @pytest.mark.parametrize('path', ['/web/', '/web'])
-    def test_method_not_allowed(self, monkeypatch, endpoint, mocked_post, client, method, path):
+    def test_method_not_allowed(self, monkeypatch, endpoint, mocked_patch, client, method, path):
         v = 'dummy'
 
-        counter = mocked_post(monkeypatch, endpoint, '', '', '', '', v.strip() if v is not None else None)
+        counter = mocked_patch(monkeypatch, endpoint, '', '', '', '', v.strip() if v is not None else None)
 
         response = getattr(client, method)(path, data=dict(move=v), follow_redirects=False)
         assert response.status_code == 405
@@ -288,10 +288,10 @@ class TestNotFound:
 
     @pytest.mark.parametrize('method', ['get', 'post', 'put', 'patch', 'delete', 'head'])
     @pytest.mark.parametrize('path', ['/invalid/', '/invalid', ])
-    def test_not_found(self, monkeypatch, endpoint, mocked_post, client, method, path):
+    def test_not_found(self, monkeypatch, endpoint, mocked_patch, client, method, path):
         v = 'dummy'
 
-        counter = mocked_post(monkeypatch, endpoint, '', '', '', '', v)
+        counter = mocked_patch(monkeypatch, endpoint, '', '', '', '', v)
 
         data = {
             'data': [
