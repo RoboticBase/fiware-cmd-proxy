@@ -20,21 +20,9 @@ ORION_ENDPOINT = 'ORION_ENDPOINT'
 PREFIX = 'PREFIX'
 
 # orion specification
-ORION_PATH = '/v1/updateContext'
+ORION_PATH = '/v2/entities/<<ROBOT_ID>>/attrs?type=<<ROBOT_TYPE>>'
 ORION_PAYLOAD_TEMPLATE = {
-    'contextElements': [
-        {
-            'id': '<<ROBOT_ID>>',
-            'isPattern': False,
-            'type': '<<ROBOT_TYPE>>',
-            'attributes': [
-                {
-                    'name': 'move',
-                    'type': 'string',
-                    'value': '<<SEND_VALUE>>',
-                }
-            ],
-        }
-    ],
-    'updateAction': 'UPDATE',
+    'move': {
+        'value': '<<SEND_VALUE>>'
+    }
 }

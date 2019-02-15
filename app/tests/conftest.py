@@ -17,12 +17,12 @@ def endpoint():
 
 
 @pytest.fixture
-def mocked_post():
+def mocked_patch():
     def setup(monkeypatch, ep, fs, fsp, ri, rt, v):
         counter = type('', (), {'count': 0})()
 
         def mock_func(endpoint, headers, data):
-            assert endpoint == ep
+            assert endpoint == ep.replace('<<ROBOT_ID>>', ri).replace('<<ROBOT_TYPE>>', rt)
             assert isinstance(headers, dict)
             assert headers == {
                 'Fiware-Service': fs,
@@ -31,24 +31,12 @@ def mocked_post():
             }
             assert isinstance(data, str)
             assert json.loads(data) == {
-                'contextElements': [
-                    {
-                        'id': ri,
-                        'isPattern': False,
-                        'type': rt,
-                        'attributes': [
-                            {
-                                'name': 'move',
-                                'type': 'string',
-                                'value': v,
-                            }
-                        ],
-                    }
-                ],
-                'updateAction': 'UPDATE',
+                'move': {
+                    'value': v
+                }
             }
             counter.count += 1
-        monkeypatch.setattr(requests, 'post', mock_func)
+        monkeypatch.setattr(requests, 'patch', mock_func)
         return counter
     return setup
 
