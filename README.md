@@ -2,7 +2,7 @@
 This [flask](http://flask.pocoo.org/) application controls [ROS](http://flask.pocoo.org/) robot from a gamepad or browser.
 
 [![TravisCI Status](https://travis-ci.org/RoboticBase/fiware-cmd-proxy.svg?branch=master)](https://travis-ci.org/RoboticBase/fiware-cmd-proxy)
-[![Docker image size](https://img.shields.io/microbadger/image-size/roboticbase/fiware-ambassador-auth.svg)](https://hub.docker.com/r/roboticbase/fiware-cmd-proxy/)
+[![Docker image size](https://img.shields.io/microbadger/image-size/roboticbase/fiware-cmd-proxy.svg)](https://hub.docker.com/r/roboticbase/fiware-cmd-proxy/)
 
 ## Description
 This application works as a component of [FIWARE](https://www.fiware.org/).
@@ -54,16 +54,16 @@ see [docs/swagger.yaml](/docs/swagger.yaml)
 
 ## Run as Docker container
 
-1. Pull container [techsketch/fiware-cmd-proxy](https://hub.docker.com/r/techsketch/fiware-cmd-proxy/) from DockerHub.
+1. Pull container [roboticbase/fiware-cmd-proxy](https://hub.docker.com/r/roboticbase/fiware-cmd-proxy/) from DockerHub.
 
     ```bash
-    $ docker pull techsketch/fiware-cmd-proxy
+    $ docker pull roboticbase/fiware-cmd-proxy:latest
     ```
 1. Run Container.
     * Set environment variable(s) if you want to change exposed port, orion endpoint, and so on.
 
     ```bash
-    $ env ORION_ENDPOINT="http://192.168.0.3:1026" LISTEN_PORT="3000" docker run -d -p 3000:3000 techsketch/fiware-cmd-proxy
+    $ env ORION_ENDPOINT="http://192.168.0.3:1026" LISTEN_PORT="3000" docker run -d -p 3000:3000 roboticbase/fiware-cmd-proxy
     ```
 
 ## Run from source code
